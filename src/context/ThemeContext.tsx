@@ -10,20 +10,27 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "dark",
+  theme: "light",
   toggleTheme: () => {},
 });
 
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("docpulse-theme") as Theme | null;
-    if (stored === "light" || stored === "dark") {
+    // Check saved preference; default to light mode
+    const stored = (localStorage.getItem("docpulse-theme-pref") ||
+      localStorage.getItem("docpulse-theme")) as Theme | null;
+
+    if (stored === "dark" || stored === "light") {
       setTheme(stored);
+      document.documentElement.setAttribute("data-theme", stored);
+    } else {
+      setTheme("light");
+      document.documentElement.setAttribute("data-theme", "light");
     }
     setMounted(true);
   }, []);
@@ -31,6 +38,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     if (!mounted) return;
     document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("docpulse-theme-pref", theme);
     localStorage.setItem("docpulse-theme", theme);
   }, [theme, mounted]);
 
