@@ -10,6 +10,9 @@ import { LandingHero } from "@/components/landing/LandingHero";
 import { PipelineView } from "@/components/pipeline/PipelineView";
 import { ApiDiffViewer } from "@/components/diff/ApiDiffViewer";
 import { LiveSpecPreview } from "@/components/specs/LiveSpecPreview";
+import { AstCodeAnalyzer } from "@/components/parser/AstCodeAnalyzer";
+import { WebhookManager } from "@/components/webhooks/WebhookManager";
+import { SettingsManager } from "@/components/settings/SettingsManager";
 import { MOCK_REPOSITORIES, MOCK_COMMITS, Repository, CommitActivity } from "@/data/mockData";
 import { Sparkles, Workflow, GitCompare, FileCode2, Radio, SlidersHorizontal } from "lucide-react";
 
@@ -144,6 +147,9 @@ export const AppShell: React.FC = () => {
             <PipelineView selectedCommit={selectedCommit} onNavigateToDiff={() => setCurrentTab("diff")} onNavigateToSpecs={() => setCurrentTab("specs")} />
           )}
 
+          {/* AST CODE ANALYZER */}
+          {currentTab === "analyzer" && <AstCodeAnalyzer />}
+
           {/* DIFF */}
           {currentTab === "diff" && <ApiDiffViewer onOpenSpecs={() => setCurrentTab("specs")} />}
 
@@ -151,62 +157,10 @@ export const AppShell: React.FC = () => {
           {currentTab === "specs" && <LiveSpecPreview />}
 
           {/* WEBHOOKS */}
-          {currentTab === "webhooks" && (
-            <div className="space-y-6">
-              <div className="rounded-xl p-6 border" style={{ background: "var(--bg-card)", borderColor: "var(--border-primary)" }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <Radio className="w-5 h-5" style={{ color: "var(--accent)" }} />
-                  <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Webhook Monitors</h2>
-                </div>
-                <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>Incoming Git push webhooks configured for AST extraction.</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { name: "GitHub Enterprise", target: "https://api.docpulse.agent/v1/webhooks/github/push", status: "ACTIVE (200 OK)", last: "4 minutes ago • 38ms" },
-                  { name: "Stripe Ingestion", target: "POST /webhooks/stripe (HMAC-SHA256)", status: "LISTENING", last: "Controller: webhook.route.ts" },
-                ].map((wh, i) => (
-                  <div key={i} className="p-5 rounded-xl border space-y-3" style={{ background: "var(--bg-card)", borderColor: "var(--border-primary)" }}>
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-[14px]" style={{ color: "var(--text-primary)" }}>{wh.name}</span>
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded" style={{ background: "var(--success-bg)", color: "var(--success)", border: "1px solid var(--success-border)" }}>{wh.status}</span>
-                    </div>
-                    <p className="text-[12px] font-mono" style={{ color: "var(--text-muted)" }}>{wh.target}</p>
-                    <p className="text-[11px] font-mono" style={{ color: "var(--text-muted)" }}>{wh.last}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {currentTab === "webhooks" && <WebhookManager />}
 
           {/* SETTINGS */}
-          {currentTab === "settings" && (
-            <div className="space-y-6 max-w-3xl">
-              <div className="rounded-xl p-6 border" style={{ background: "var(--bg-card)", borderColor: "var(--border-primary)" }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <SlidersHorizontal className="w-5 h-5" style={{ color: "var(--accent)" }} />
-                  <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Agent Settings</h2>
-                </div>
-                <p className="text-[13px]" style={{ color: "var(--text-muted)" }}>CI/CD triggers, AST rulesets, and OpenAPI distribution config.</p>
-              </div>
-              <div className="p-6 rounded-xl border space-y-5" style={{ background: "var(--bg-card)", borderColor: "var(--border-primary)" }}>
-                {[
-                  { title: "Auto-Deploy to Swagger Hub", desc: "Publish validated specs on branch merge.", value: "ENABLED" },
-                  { title: "Spectral Lint Rules", desc: "Fail on missing operationId or invalid schemas.", value: "STRICT (v6.11)" },
-                  { title: "Slack Notifications", desc: "Post diffs to #eng-api-updates on breaking changes.", value: "#ENG-ALERTS" },
-                ].map((setting, i) => (
-                  <div key={i} className="flex items-center justify-between pb-4 border-b last:border-b-0 last:pb-0" style={{ borderColor: "var(--border-primary)" }}>
-                    <div>
-                      <span className="text-[14px] font-semibold block" style={{ color: "var(--text-primary)" }}>{setting.title}</span>
-                      <span className="text-[12px]" style={{ color: "var(--text-muted)" }}>{setting.desc}</span>
-                    </div>
-                    <span className="text-[11px] font-mono px-2.5 py-1 rounded-full" style={{ background: "var(--success-bg)", color: "var(--success)", border: "1px solid var(--success-border)" }}>
-                      {setting.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {currentTab === "settings" && <SettingsManager />}
         </main>
       </div>
 

@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Sun,
   Moon,
+  Code2,
 } from "lucide-react";
 import { GithubIcon } from "@/components/icons/BrandIcons";
 import { MOCK_REPOSITORIES, Repository } from "@/data/mockData";
@@ -42,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const navItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "pipeline", label: "Pipeline Runs", icon: Workflow, badge: "Active" },
+    { id: "analyzer", label: "AST Code Ingestion", icon: Code2, badge: "Live" },
     { id: "diff", label: "API Diff Inspector", icon: GitCompare, badge: "3" },
     { id: "specs", label: "API Specifications", icon: FileCode2 },
     { id: "webhooks", label: "Webhooks", icon: Radio },

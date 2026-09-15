@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Download, Copy, Check, ChevronDown, Play, Server, ShieldCheck } from "lucide-react";
+import { Download, Copy, Check, ChevronDown, Play, Server, ShieldCheck, FileCheck, AlertCircle, Sparkles } from "lucide-react";
 import { MOCK_OPENAPI_SPEC } from "@/data/pipelineData";
 import { cn } from "@/lib/utils";
 
 export const LiveSpecPreview: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"swagger" | "json">("swagger");
+  const [activeTab, setActiveTab] = useState<"swagger" | "json" | "audit">("swagger");
+  const [isAuditing, setIsAuditing] = useState<boolean>(false);
   const [selectedServer, setSelectedServer] = useState<string>(MOCK_OPENAPI_SPEC.servers[0].url);
   const [expandedEndpoints, setExpandedEndpoints] = useState<Record<string, boolean>>({ "/v2/refunds": true });
   const [testPayloads, setTestPayloads] = useState({ paymentId: "pay_9f82c401", amount: "4500", currency: "USD" });
@@ -52,6 +53,10 @@ export const LiveSpecPreview: React.FC = () => {
             <button onClick={() => setActiveTab("json")} className="px-2.5 py-1 rounded-md transition font-medium"
               style={{ background: activeTab === "json" ? "var(--accent)" : "transparent", color: activeTab === "json" ? "white" : "var(--text-muted)" }}>
               Raw JSON
+            </button>
+            <button onClick={() => setActiveTab("audit")} className="px-2.5 py-1 rounded-md transition font-medium flex items-center gap-1"
+              style={{ background: activeTab === "audit" ? "var(--accent)" : "transparent", color: activeTab === "audit" ? "white" : "var(--text-muted)" }}>
+              <FileCheck className="w-3 h-3" /> Audit (98%)
             </button>
           </div>
           <button onClick={handleDownload} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[12px] font-mono transition"
@@ -204,6 +209,129 @@ export const LiveSpecPreview: React.FC = () => {
           <pre className="p-5 text-[12px] font-mono max-h-[500px] overflow-y-auto leading-relaxed" style={{ color: "var(--text-secondary)" }}>
             {JSON.stringify(MOCK_OPENAPI_SPEC, null, 2)}
           </pre>
+        </div>
+      )}
+
+      {activeTab === "audit" && (
+        <div className="space-y-4">
+          {/* Audit Scorecard */}
+          <div
+            className="p-5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            style={{ background: "var(--bg-card)", borderColor: "var(--border-primary)", boxShadow: "var(--shadow-sm)" }}
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="w-14 h-14 rounded-xl flex items-center justify-center font-bold text-xl border"
+                style={{
+                  background: "var(--success-bg)",
+                  color: "var(--success)",
+                  borderColor: "var(--success-border)",
+                }}
+              >
+                98%
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold" style={{ color: "var(--text-primary)" }}>
+                    Spectral Lint Compliance
+                  </h3>
+                  <span
+                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded"
+                    style={{ background: "var(--success-bg)", color: "var(--success)" }}
+                  >
+                    GRADE A+
+                  </span>
+                </div>
+                <p className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                  Specification evaluated against OpenAPI 3.1.0 and Spectral strict ruleset v6.11.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setIsAuditing(true);
+                setTimeout(() => setIsAuditing(false), 900);
+              }}
+              className="px-3.5 py-1.5 rounded-lg border text-[12px] font-medium transition flex items-center gap-1.5 self-start sm:self-auto"
+              style={{
+                background: "var(--bg-elevated)",
+                borderColor: "var(--border-primary)",
+                color: "var(--text-secondary)",
+              }}
+            >
+              <Sparkles className={cn("w-3.5 h-3.5", isAuditing && "animate-spin")} style={{ color: "var(--accent)" }} />
+              {isAuditing ? "Auditing Rules..." : "Re-run Spectral Audit"}
+            </button>
+          </div>
+
+          {/* Audit Rules List */}
+          <div
+            className="rounded-xl border divide-y overflow-hidden"
+            style={{ background: "var(--bg-card)", borderColor: "var(--border-primary)" }}
+          >
+            {[
+              {
+                rule: "oas3-schema",
+                desc: "Specification conforms to the official OpenAPI 3.1.0 JSON schema specification.",
+                status: "PASS",
+                severity: "success",
+              },
+              {
+                rule: "operation-operationId-unique",
+                desc: "Every operation across all path items must have a unique operationId identifier.",
+                status: "PASS",
+                severity: "success",
+              },
+              {
+                rule: "operation-description",
+                desc: "Operation must define an explanation of its purpose in the description field.",
+                status: "PASS",
+                severity: "success",
+              },
+              {
+                rule: "operation-2xx-response",
+                desc: "Operation must define at least one successful 2xx HTTP response code with schema.",
+                status: "PASS",
+                severity: "success",
+              },
+              {
+                rule: "typed-request-body",
+                desc: "POST/PUT operations with request bodies must have explicit application/json schemas.",
+                status: "PASS",
+                severity: "success",
+              },
+              {
+                rule: "info-contact",
+                desc: "Info object should contain contact name and email URL for developer support inquiries.",
+                status: "INFO",
+                severity: "info",
+              },
+            ].map((item, idx) => (
+              <div key={idx} className="p-4 flex items-start justify-between gap-4" style={{ borderColor: "var(--border-subtle)" }}>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[13px] font-semibold" style={{ color: "var(--text-primary)" }}>
+                      {item.rule}
+                    </span>
+                  </div>
+                  <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
+                    {item.desc}
+                  </p>
+                </div>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold shrink-0"
+                  style={{
+                    background: item.severity === "success" ? "var(--success-bg)" : "var(--info-bg)",
+                    color: item.severity === "success" ? "var(--success)" : "var(--info)",
+                    border: `1px solid ${item.severity === "success" ? "var(--success-border)" : "var(--info-border)"}`,
+                  }}
+                >
+                  {item.status}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
