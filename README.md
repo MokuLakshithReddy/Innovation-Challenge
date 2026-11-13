@@ -3,7 +3,35 @@
 > **API Docs that write themselves.**  
 > An automated CI/CD pipeline tool and developer dashboard that monitors backend codebases (Node.js/Express, Python/FastAPI), detects structural API changes via AST analysis, and automatically generates, validates, diffs, and deploys OpenAPI 3.1 specifications.
 
+
+[![Stars](https://img.shields.io/github/stars/MokuLakshithReddy/Innovation-Challenge?style=flat-square)](https://github.com/MokuLakshithReddy/Innovation-Challenge/stargazers)
+[![Forks](https://img.shields.io/github/forks/MokuLakshithReddy/Innovation-Challenge?style=flat-square)](https://github.com/MokuLakshithReddy/Innovation-Challenge/network/members)
+[![Last Commit](https://img.shields.io/github/last-commit/MokuLakshithReddy/Innovation-Challenge?style=flat-square)](https://github.com/MokuLakshithReddy/Innovation-Challenge/commits/main)
+
 ---
+
+## Visual architecture
+
+```mermaid
+flowchart TD
+    U["Developer opens DocPulse dashboard"] --> P["Select demo repository / view"]
+    P --> B["Run pipeline interaction"]
+    B --> I["Mock API: pipeline status and step output"]
+    I --> S["Stage 1: source-ingestion visualisation"]
+    S --> A["Stage 2: AST/code-analysis visualisation"]
+    A --> G["Stage 3: OpenAPI spec preview"]
+    G --> V["Stage 4: validation feedback"]
+    V --> D["Stage 5: publish/deploy visualisation"]
+    I --> L["Timestamped terminal log"]
+    P --> DF["API diff viewer"]
+    P --> O["OpenAPI / Swagger preview"]
+    DF --> I
+    O --> I
+```
+
+**Why it matters:** API changes can silently invalidate examples, SDKs, and integrations. DocPulse demonstrates how a developer could review a proposed spec update, inspect breaking changes, and follow a visible validation/publishing pipeline.
+
+**Current scope:** The repository's API routes are mock endpoints for the pipeline, diff, and spec experience. The current app does not yet ingest an arbitrary Git repository, run AST analysis against its source, or deploy an OpenAPI document to an external provider. Treat the pipeline, terminal logs, API responses, and repository-health indicators as a product prototype—not a running CI/CD agent.
 
 ## 🌟 Key Features
 
